@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "743253914783",
+    "project_id": "numonics-226e1",
+    "storage_bucket": "numonics-226e1.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:743253914783:android:3ca719fca0358863041eaa",
+        "android_client_info": {
+          "package_name": "com.harshitaforever.Numoni"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyArwxeHTfDvi-PH6gyom8Pp8M9rY2MLPaA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:743253914783:android:516dd066ac203592041eaa",
+        "android_client_info": {
+          "package_name": "com.harshitaforever.Numonics"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyArwxeHTfDvi-PH6gyom8Pp8M9rY2MLPaA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
