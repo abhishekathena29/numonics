@@ -242,16 +242,73 @@ class _Bubble extends StatelessWidget {
         ),
         child: typing
             ? const _TypingDots()
-            : Text(
-                message.text,
-                style: TextStyle(
-                  color: isUser ? Colors.white : AppColors.ink,
-                  fontSize: 15,
-                  height: 1.45,
-                ),
+            : _FormattedText(
+                text: message.text,
+                color: isUser ? Colors.white : AppColors.ink,
               ),
       ),
     );
+  }
+}
+
+/// Renders chat text with lightweight markdown support (**bold** and
+/// "- "/"* " bullet lines) since Mathy's replies sometimes include it even
+/// though the system prompt asks for plain text.
+class _FormattedText extends StatelessWidget {
+  const _FormattedText({required this.text, required this.color});
+  final String text;
+  final Color color;
+
+  static final _bulletPattern = RegExp(r'^\s*[-*]\s+(.*)');
+  static final _boldPattern = RegExp(r'\*\*(.+?)\*\*');
+
+  @override
+  Widget build(BuildContext context) {
+    final baseStyle = TextStyle(color: color, fontSize: 15, height: 1.45);
+    final lines = text.split('\n');
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        for (var i = 0; i < lines.length; i++) ...[
+          if (i > 0) const SizedBox(height: 4),
+          _buildLine(lines[i], baseStyle),
+        ],
+      ],
+    );
+  }
+
+  Widget _buildLine(String line, TextStyle baseStyle) {
+    final bulletMatch = _bulletPattern.firstMatch(line);
+    if (bulletMatch != null) {
+      return Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('•  ', style: baseStyle),
+          Expanded(child: _richLine(bulletMatch.group(1)!, baseStyle)),
+        ],
+      );
+    }
+    return _richLine(line, baseStyle);
+  }
+
+  Widget _richLine(String line, TextStyle baseStyle) {
+    final spans = <TextSpan>[];
+    var start = 0;
+    for (final m in _boldPattern.allMatches(line)) {
+      if (m.start > start) {
+        spans.add(TextSpan(text: line.substring(start, m.start)));
+      }
+      spans.add(TextSpan(
+        text: m.group(1),
+        style: const TextStyle(fontWeight: FontWeight.w700),
+      ));
+      start = m.end;
+    }
+    if (start < line.length || spans.isEmpty) {
+      spans.add(TextSpan(text: line.substring(start)));
+    }
+    return RichText(text: TextSpan(style: baseStyle, children: spans));
   }
 }
 

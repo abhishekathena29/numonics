@@ -83,15 +83,49 @@ class FirebaseService {
     });
   }
 
+  /// Records a correct answer and rolls the daily streak forward:
+  /// solving again the same calendar day leaves the streak unchanged,
+  /// solving the day after bumps it by one, and any bigger gap resets it.
   Future<void> addXpAndSolve({
     required String uid,
     required int xp,
   }) async {
-    await _userDoc(uid).set({
-      'xp': FieldValue.increment(xp),
-      'solved': FieldValue.increment(1),
-      'lastActive': FieldValue.serverTimestamp(),
-    }, SetOptions(merge: true));
+    final ref = _userDoc(uid);
+    await _db.runTransaction((tx) async {
+      final snap = await tx.get(ref);
+      final data = snap.data() ?? const <String, dynamic>{};
+
+      final now = DateTime.now();
+      final today = DateTime(now.year, now.month, now.day);
+      final lastActiveTs = data['lastActive'];
+      DateTime? lastActiveDay;
+      if (lastActiveTs is Timestamp) {
+        final d = lastActiveTs.toDate();
+        lastActiveDay = DateTime(d.year, d.month, d.day);
+      }
+
+      final currentStreak = (data['streak'] as num?)?.toInt() ?? 0;
+      final int newStreak;
+      if (lastActiveDay == null) {
+        newStreak = 1;
+      } else {
+        final gap = today.difference(lastActiveDay).inDays;
+        if (gap == 0) {
+          newStreak = currentStreak == 0 ? 1 : currentStreak;
+        } else if (gap == 1) {
+          newStreak = currentStreak + 1;
+        } else {
+          newStreak = 1;
+        }
+      }
+
+      tx.set(ref, {
+        'xp': FieldValue.increment(xp),
+        'solved': FieldValue.increment(1),
+        'streak': newStreak,
+        'lastActive': FieldValue.serverTimestamp(),
+      }, SetOptions(merge: true));
+    });
   }
 
   // ---- Groq config -------------------------------------------------------

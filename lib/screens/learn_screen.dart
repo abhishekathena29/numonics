@@ -102,33 +102,37 @@ class _LessonTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return GlassCard(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      child: Theme(
-        data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
-        child: ExpansionTile(
-          tilePadding: const EdgeInsets.symmetric(horizontal: 12),
-          childrenPadding: const EdgeInsets.fromLTRB(12, 0, 12, 16),
-          iconColor: AppColors.primary,
-          collapsedIconColor: AppColors.inkFaint,
-          leading: Container(
-            width: 40,
-            height: 40,
-            decoration: BoxDecoration(
-              color: AppColors.primaryTint,
-              borderRadius: BorderRadius.circular(12),
+      child: Material(
+        type: MaterialType.transparency,
+        child: Theme(
+          data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
+          child: ExpansionTile(
+            tilePadding: const EdgeInsets.symmetric(horizontal: 12),
+            childrenPadding: const EdgeInsets.fromLTRB(12, 0, 12, 16),
+            iconColor: AppColors.primary,
+            collapsedIconColor: AppColors.inkFaint,
+            leading: Container(
+              width: 40,
+              height: 40,
+              decoration: BoxDecoration(
+                color: AppColors.primaryTint,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: const Icon(Icons.menu_book_rounded,
+                  color: AppColors.primary, size: 20),
             ),
-            child: const Icon(Icons.menu_book_rounded,
-                color: AppColors.primary, size: 20),
+            title:
+                Text(lesson.title, style: AppText.h2.copyWith(fontSize: 15.5)),
+            subtitle: Text(lesson.summary,
+                style: AppText.body.copyWith(fontSize: 12.5)),
+            children: [
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Text(lesson.body,
+                    style: AppText.body.copyWith(fontSize: 14, height: 1.5)),
+              ),
+            ],
           ),
-          title: Text(lesson.title, style: AppText.h2.copyWith(fontSize: 15.5)),
-          subtitle: Text(lesson.summary,
-              style: AppText.body.copyWith(fontSize: 12.5)),
-          children: [
-            Align(
-              alignment: Alignment.centerLeft,
-              child: Text(lesson.body,
-                  style: AppText.body.copyWith(fontSize: 14, height: 1.5)),
-            ),
-          ],
         ),
       ),
     );
