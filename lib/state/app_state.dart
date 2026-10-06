@@ -85,6 +85,12 @@ class AppState extends ChangeNotifier {
     await _fb.signOut();
   }
 
+  /// Deletes the account; the auth listener then routes back to sign-in.
+  Future<void> deleteAccount({required String password}) async {
+    _onboarded = true;
+    await _fb.deleteAccount(password: password);
+  }
+
   /// Records a correct answer: bumps local challenge progress and awards XP in
   /// Firestore. Fire-and-forget on the network side so the UI stays snappy.
   void recordCorrect({required String challengeId, int xp = 10}) {

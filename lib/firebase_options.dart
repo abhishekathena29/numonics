@@ -63,14 +63,12 @@ class DefaultFirebaseOptions {
     projectId: 'numonics-226e1',
     storageBucket: 'numonics-226e1.firebasestorage.app',
   );
-
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyC88yJBqYLaV0l1-7Fb-i-ZFqKUXMid6dI',
-    appId: '1:743253914783:ios:2e08c43176b4c703041eaa',
+    appId: '1:743253914783:ios:4c3f0911c7d33c1c041eaa',
     messagingSenderId: '743253914783',
     projectId: 'numonics-226e1',
     storageBucket: 'numonics-226e1.firebasestorage.app',
-    iosBundleId: 'com.harshitaforever.Numonics',
+    iosBundleId: 'com.numonics.app',
   );
-
 }

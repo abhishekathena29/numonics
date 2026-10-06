@@ -9,7 +9,7 @@
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>com.harshitaforever.Numonics</string>
+	<string>com.numonics.app</string>
 	<key>PROJECT_ID</key>
 	<string>numonics-226e1</string>
 	<key>STORAGE_BUCKET</key>
@@ -25,6 +25,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:743253914783:ios:2e08c43176b4c703041eaa</string>
+	<string>1:743253914783:ios:4c3f0911c7d33c1c041eaa</string>
 </dict>
 </plist>

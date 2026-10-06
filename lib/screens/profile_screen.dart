@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import '../theme.dart';
 import '../widgets/common.dart';
@@ -80,6 +81,20 @@ class ProfileScreen extends StatelessWidget {
               color: AppColors.coral,
               onPressed: () => _confirmSignOut(context),
             ),
+            const SizedBox(height: 8),
+            Center(
+              child: TextButton.icon(
+                onPressed: () => showDialog<void>(
+                  context: context,
+                  builder: (_) => const _DeleteAccountDialog(),
+                ),
+                icon: const Icon(Icons.delete_outline,
+                    color: AppColors.coral, size: 20),
+                label: const Text('Delete account',
+                    style: TextStyle(
+                        color: AppColors.coral, fontWeight: FontWeight.w600)),
+              ),
+            ),
           ],
         );
       },
@@ -125,6 +140,113 @@ class ProfileScreen extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+class _DeleteAccountDialog extends StatefulWidget {
+  const _DeleteAccountDialog();
+
+  @override
+  State<_DeleteAccountDialog> createState() => _DeleteAccountDialogState();
+}
+
+class _DeleteAccountDialogState extends State<_DeleteAccountDialog> {
+  final _password = TextEditingController();
+  bool _busy = false;
+  String? _error;
+
+  @override
+  void dispose() {
+    _password.dispose();
+    super.dispose();
+  }
+
+  Future<void> _delete() async {
+    if (_password.text.isEmpty) {
+      setState(() => _error = 'Enter your password to continue.');
+      return;
+    }
+    setState(() {
+      _busy = true;
+      _error = null;
+    });
+    try {
+      await AppState.instance.deleteAccount(password: _password.text);
+      if (mounted) Navigator.of(context).pop();
+    } on FirebaseAuthException catch (e) {
+      setState(() {
+        _busy = false;
+        _error = switch (e.code) {
+          'wrong-password' || 'invalid-credential' => 'Incorrect password.',
+          'too-many-requests' => 'Too many attempts. Try again later.',
+          'network-request-failed' => 'No internet connection.',
+          _ => e.message ?? 'Could not delete account.',
+        };
+      });
+    } catch (_) {
+      setState(() {
+        _busy = false;
+        _error = 'Could not delete account. Please try again.';
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      backgroundColor: AppColors.surface,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      title: const Text('Delete account?', style: AppText.h2),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'This permanently deletes your account, XP, streak and progress. '
+            'This cannot be undone.',
+            style: AppText.body,
+          ),
+          const SizedBox(height: 16),
+          TextField(
+            controller: _password,
+            obscureText: true,
+            enabled: !_busy,
+            style: const TextStyle(color: AppColors.ink),
+            onSubmitted: (_) => _delete(),
+            decoration: InputDecoration(
+              hintText: 'Confirm your password',
+              hintStyle: const TextStyle(color: AppColors.inkFaint),
+              filled: true,
+              fillColor: AppColors.fill,
+              errorText: _error,
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(14),
+                borderSide: BorderSide.none,
+              ),
+            ),
+          ),
+        ],
+      ),
+      actions: [
+        TextButton(
+          onPressed: _busy ? null : () => Navigator.of(context).pop(),
+          child: const Text('Cancel',
+              style: TextStyle(color: AppColors.inkSoft)),
+        ),
+        TextButton(
+          onPressed: _busy ? null : _delete,
+          child: _busy
+              ? const SizedBox(
+                  width: 18,
+                  height: 18,
+                  child: CircularProgressIndicator(
+                      strokeWidth: 2, color: AppColors.coral))
+              : const Text('Delete',
+                  style: TextStyle(
+                      color: AppColors.coral, fontWeight: FontWeight.w700)),
+        ),
+      ],
     );
   }
 }

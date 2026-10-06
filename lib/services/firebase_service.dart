@@ -65,6 +65,21 @@ class FirebaseService {
 
   Future<void> signOut() => _auth.signOut();
 
+  /// Permanently deletes the signed-in user's profile doc and auth account.
+  /// Firebase requires a recent login for this, so the password is used to
+  /// re-authenticate first.
+  Future<void> deleteAccount({required String password}) async {
+    final user = _auth.currentUser;
+    if (user == null) return;
+    final credential = EmailAuthProvider.credential(
+      email: user.email ?? '',
+      password: password,
+    );
+    await user.reauthenticateWithCredential(credential);
+    await _userDoc(user.uid).delete();
+    await user.delete();
+  }
+
   // ---- Profile -----------------------------------------------------------
 
   /// Live profile stream. If the doc is missing (e.g. an older account),
